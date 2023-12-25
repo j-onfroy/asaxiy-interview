@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Candidate;
 use Ramsey\Uuid\Uuid;
 use Yii;
+use yii\base\InvalidRouteException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -13,6 +14,7 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
+use yii\web\UploadedFile;
 
 
 class SiteController extends Controller
@@ -63,6 +65,7 @@ class SiteController extends Controller
      * Displays homepage.
      *
      * @return string
+     * @throws InvalidRouteException
      */
     public function actionIndex()
     {
@@ -76,30 +79,45 @@ class SiteController extends Controller
         $s3 = new S3Client([
             'version' => 'latest',
             'region' => $region,
-            'credential' => [
+            'credentials' => [
                 'key' => $accessKeyId,
                 'secret' => $secretAccessKey
             ]
         ]);
 
-        $uuid = Uuid::uuid4()->toString();
-        $fileName = $uuid . 'resume' . '.pdf';
-        $fileTmpName = $model->resume_url;
-
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $result = $s3->putObject([
-                'Bucket' => $bucketName,
-                'Key' => 'folder/' . $fileName,
-                'Body' => fopen($fileTmpName, 'rb'),
-                'ACL' => 'public-read',
-            ]);
+            $uploadedFile = UploadedFile::getInstance($model, 'resume_url');
 
-            $awsFileUrl = $result['ObjectURL'];
+            if ($uploadedFile !== null) {
+                $uuid = Uuid::uuid4()->toString();
+                $fileName = $uuid . 'resume' . '.' . $uploadedFile->extension;
+                $fileTmpName = $uploadedFile->tempName;
 
-            $model->resume_url = $awsFileUrl;
-            if ($model->save()) {
-                echo "baxtli";
+                try {
+                    $result = $s3->putObject([
+                        'Bucket' => $bucketName,
+                        'Key' => 'resumes/' . $fileName,
+                        'Body' => fopen($fileTmpName, 'rb'),
+                        'ACL' => 'public-read',
+                    ]);
+
+                    $awsFileUrl = $result['ObjectURL'];
+
+                    $model->resume_url = $awsFileUrl;
+                    if ($model->save()) {
+                        echo "File uploaded to S3 and model saved successfully.";
+                        Yii::$app->response->redirect(['site/about']);
+                    } else {
+                        echo "Failed to save model with S3 file URL.";
+                    }
+                } catch (AwsException $e) {
+                    echo "Error uploading file to S3: " . $e->getMessage();
+                }
+            } else {
+                echo "No file uploaded.";
             }
+        } else {
+            echo "Model data not loaded or validation failed.";
         }
 
         return $this->render('index',

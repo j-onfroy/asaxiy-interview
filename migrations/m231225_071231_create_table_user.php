@@ -23,7 +23,6 @@ class m231225_071231_create_table_user extends Migration
             'birthday'=>$this->timestamp()->notNull(),
             'resume_url'=>$this->string()->notNull(),
             'hired'=>$this->boolean()->defaultValue(false)
-
         ]);
     }
 
