@@ -17,11 +17,13 @@ class Candidate extends ActiveRecord
     {
         return [
             [['first_name', 'last_name', 'email', 'address', 'country_of_origin', 'phone_number', 'birthday'], 'required'],
-            [['resume_url'],'file','extensions'=>'pdf','mimeTypes'=>'application/pdf'],
+            [['resume_url'], 'file', 'extensions' => 'pdf', 'mimeTypes' => 'application/pdf'],
             [['first_name', 'last_name'], 'string', 'min' => 5],
             [['address'], 'string', 'min' => 10],
             ['email', 'email'],
-            [['phone_number'], 'string', 'length' => 13]
+            ['email','unique','message'=>'This email already exists'],
+            [['phone_number'], 'string', 'length' => 13],
+            ['phone_number', 'unique','message'=>'This phone number already exists'],
         ];
     }
 }

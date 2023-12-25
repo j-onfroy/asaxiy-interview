@@ -14,6 +14,8 @@ $form = ActiveForm::begin([
     ],
 ]);
 
+echo Html::a('Apply for Job', ['admin/index'], ['class' => 'btn btn-primary'])."<br>";
+echo "<br>";
 echo $form->field($model, 'first_name')->textInput(['value' => Yii::$app->request->get('first_name') ?? $model->first_name]);
 echo $form->field($model, 'last_name')->textInput(['value' => Yii::$app->request->get('last_name') ?? $model->last_name]);
 echo $form->field($model, 'email')->input('email')->textInput(['value' => Yii::$app->request->get('email') ?? $model->email]);
