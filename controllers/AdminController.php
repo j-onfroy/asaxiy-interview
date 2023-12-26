@@ -1,11 +1,12 @@
 <?php
 
 namespace app\controllers;
-
+use app\models\Interview;
 use app\models\Vacancy;
 use Yii;
 use yii\base\InvalidRouteException;
 use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\data\Sort;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -82,6 +83,9 @@ class AdminController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * @throws NotFoundHttpException
+     */
     protected function findModel($id): ?Vacancy
     {
         if (($model = Vacancy::findOne($id)) != null) {
@@ -89,10 +93,5 @@ class AdminController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-    }
-
-    public function actionViewResume()
-    {
-        return $this->render('view-resume');
     }
 }

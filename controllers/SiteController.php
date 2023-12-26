@@ -177,12 +177,7 @@ class SiteController extends Controller
                     $model->resume_url = $awsFileUrl;
 
                     if ($model->save()) {
-
                         $user_id = $model->id;
-
-                        var_dump($user_id);
-                        var_dump($jobId);
-
                         $interview = new Interview();
                         $interview->user_id = $user_id;
                         $interview->job_id = $jobId;

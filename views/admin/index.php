@@ -9,7 +9,7 @@ echo Html::a('Create job', ['admin/create-job'], ['class' => 'btn btn-primary'])
 ?>
     <div class="top-right">
         <?=
-        Html::a('View Resumes', ['admin/view-resume'], ['class' => 'btn btn-primary']) . "<br>";
+        Html::a('View Resumes', ['view/view-resume'], ['class' => 'btn btn-primary']) . "<br>";
         ?>
     </div>
 
