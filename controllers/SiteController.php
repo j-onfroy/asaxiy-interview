@@ -3,6 +3,8 @@
 namespace app\controllers;
 
 use app\models\Candidate;
+use app\models\Interview;
+use app\models\Vacancy;
 use Ramsey\Uuid\Uuid;
 use Yii;
 use yii\base\InvalidRouteException;
@@ -68,7 +70,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $data = Vacancy::find()->all();
+        return $this->render('index', [
+            'data' => $data
+        ]);
     }
 
     /**
@@ -137,7 +142,7 @@ class SiteController extends Controller
     {
 
         $model = new Candidate();
-
+        $jobId = Yii::$app->request->get('id');
         $bucketName = 'interview-asaxiy';
         $accessKeyId = 'AKIASGR7SVNCMQBZVFPA';
         $secretAccessKey = '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';
@@ -169,11 +174,22 @@ class SiteController extends Controller
                     ]);
 
                     $awsFileUrl = $result['ObjectURL'];
-
                     $model->resume_url = $awsFileUrl;
+
                     if ($model->save()) {
-                        echo "File uploaded to S3 and model saved successfully.";
-                        Yii::$app->response->redirect(['site/about']);
+
+                        $user_id = $model->id;
+
+                        var_dump($user_id);
+                        var_dump($jobId);
+
+                        $interview = new Interview();
+                        $interview->user_id = $user_id;
+                        $interview->job_id = $jobId;
+                        if ($interview->save()) {
+                            Yii::$app->session->setFlash('success', 'Your application submitted');
+                            return $this->redirect(['site/about']);
+                        }
                     } else {
                         echo "Failed to save model with S3 file URL.";
                     }

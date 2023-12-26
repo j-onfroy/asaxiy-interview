@@ -1,38 +1,43 @@
 <?php
 
+use yii\bootstrap5\Html;
 use yii\grid\GridView;
-use yii\helpers\Html;
+
 echo "Hello from admin";
 echo "<br>";
-echo Html::a('Create job', ['admin/create-job'], ['class' => 'btn btn-primary']) . "<br>";
+echo Html::a('Create job', ['admin/create-job'], ['class' => 'btn btn-primary']);
+?>
+    <div class="top-right">
+        <?=
+        Html::a('View Resumes', ['admin/view-resume'], ['class' => 'btn btn-primary']) . "<br>";
+        ?>
+    </div>
 
-echo GridView::widget([
+<?= GridView::widget([
+
     'dataProvider' => $dataProvider,
-    'columns' => [
-        'id',
-        'job_title',
-        'skills',
-        'job_about',
-        [
-            'class' => 'yii\grid\ActionColumn',
-            'template' => '{view} {update} {delete}',
-            'buttons' => [
-                'view' => function ($url, $model, $key) {
-                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', ['view', 'id' => $model->id]);
-                },
-                'update' => function ($url, $model, $key) {
-                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', ['update', 'id' => $model->id]);
-                },
-                'delete' => function ($url, $model, $key) {
-                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['delete', 'id' => $model->id], [
-                        'data' => [
-                            'confirm' => 'Are you sure you want to delete this item?',
-                            'method' => 'post',
-                        ],
-                    ]);
-                },
-            ],
-        ],
-    ],
-]);
 
+
+    'pager' => [
+        'class' => '\yii\widgets\LinkPager',
+        'pageCssClass' => 'page-link',
+        'options' => ['class' => 'pagination'],
+        'maxButtonCount' => 5,
+        'nextPageLabel' => 'Keyingi',
+        'prevPageLabel' => 'Oldingi'
+    ],
+
+    'columns' => [
+
+        ['class' => 'yii\grid\SerialColumn'],
+
+        'job_title',
+
+        'skills',
+
+        'job_about',
+
+        ['class' => 'yii\grid\ActionColumn'],
+    ],
+
+]);
