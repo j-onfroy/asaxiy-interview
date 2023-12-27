@@ -39,22 +39,34 @@ use yii\helpers\Html;
             'label' => 'Resume',
             'format' => 'raw',
             'value' => function ($model) {
-                return Html::a('<i class="fas fa-file-alt"></i> Resume', $model->candidate->resume_url, ['target' => '_blank']);
+                $resumeUrl = $model->candidate->resume_url;
+                $fileSize = '';
+
+                if (strpos($resumeUrl, 'https') === 0) {
+                    $headers = get_headers($resumeUrl, true);
+
+                    if (isset($headers['Content-Length'])) {
+                        $sizeInBytes = $headers['Content-Length'];
+                        $fileSize = '(' . Yii::$app->formatter->asShortSize($sizeInBytes).')';
+                    }
+                }
+                $resumeLink = Html::a('<i class="fas fa-file-alt"></i> Resume', $resumeUrl, ['target' => '_blank']);
+                return $resumeLink . ' ' . $fileSize;
             }
         ],
         'status',
         'created_date',
         ['class' => 'yii\grid\ActionColumn',
-            'template' => '{update}{delete}{view}{response}{ignore}',
+            'template' => ' {view} {response} {delete}  {ignore}',
             'buttons' => [
                 'response' => function ($url, $model, $key) {
-                    return Html::a('Response', ['view/response-resume', 'id' => $model->id], ['class' => 'btn btn-primary']);
-                },
-                'update' => function ($url, $model, $key) {
-                    return Html::a('<i class="fas fa-edit"> </i>', ['view/update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                    if ($model->status == "Qabul qilinmagan") {
+                        return "         ";
+                    } else
+                        return Html::a('Response', ['view/response-resume', 'id' => $model->id], ['class' => 'btn btn-success']);
                 },
                 'delete' => function ($url, $model, $key) {
-                    return Html::a('<i class="fas fa-trash"> </i>', ['view/delete', 'id' => $model->id], ['class' => 'btn btn-primary',
+                    return Html::a('<i class="fas fa-trash"> </i>', ['view/delete', 'id' => $model->id], ['class' => 'btn btn-warning',
                         'data' => [
                             'confirm' => 'Are you sure you want to delete this item?',
                             'method' => 'post',
@@ -66,7 +78,7 @@ use yii\helpers\Html;
                 'ignore' => function ($url, $model, $key) {
                     if ($model->status != "Qabul qilinmagan") {
                         return Html::a('<i class="fas fa-ban"></i>', ['view/ignore', 'id' => $model->id],
-                            ['class' => 'btn btn-primary',
+                            ['class' => 'btn btn-danger',
                                 'title' => 'Reject',
                                 'aria-label' => 'Ignore',
                             ]);

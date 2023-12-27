@@ -87,21 +87,39 @@ class ViewController extends Controller
         $interviews = Interview::find()
             ->innerJoinWith('vacancy')
             ->innerJoinWith('candidate')
+            ->where(['status'=>'Yangi'])
+            ->orWhere(['status'=>'Qabul qilinmagan'])
             ->all();
 
         usort($interviews, function ($a, $b) {
-            $jobTitleA = $a->vacancy->job_title;
-            $jobTitleB = $b->vacancy->job_title;
+            $statusOrder = [
+                'Yangi' => 0,
+            ];
 
-            if ($jobTitleA !== $jobTitleB) {
-                return strcmp($jobTitleA, $jobTitleB);
+            $statusA = $a->status;
+            $statusB = $b->status;
+
+            $statusOrderA = $statusOrder[$statusA] ?? PHP_INT_MAX;
+            $statusOrderB = $statusOrder[$statusB] ?? PHP_INT_MAX;
+
+            if ($statusOrderA !== $statusOrderB) {
+                return $statusOrderA - $statusOrderB;
             } else {
-                $dateA = strtotime($a->created_date);
-                $dateB = strtotime($b->created_date);
-                return $dateA <=> $dateB;
+
+                $jobTitleA = $a->vacancy->job_title;
+                $jobTitleB = $b->vacancy->job_title;
+
+                if ($jobTitleA !== $jobTitleB) {
+                    return strcmp($jobTitleA, $jobTitleB);
+                } else {
+                    $dateA = strtotime($a->created_date);
+                    $dateB = strtotime($b->created_date);
+                    return $dateA <=> $dateB;
+                }
             }
         });
         return $interviews;
+
     }
 
     /**
@@ -151,5 +169,9 @@ class ViewController extends Controller
             ->setTextBody($text)
             ->setHtmlBody($html);
         return $email;
+    }
+    public function actionInterviews()
+    {
+        return $this->render('interviews');
     }
 }
