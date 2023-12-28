@@ -92,6 +92,6 @@ use yii\helpers\Html;
 
 ]);
 ?>
-
 </body>
 </html>
+<?= Html::a('Back', ['admin/index'], ['class' => 'btn btn-warning'])?>

@@ -33,3 +33,6 @@
     background-color: #007bff;
     color: #fff;
 }
+.bold-label {
+    font-weight: bold;
+}

@@ -21,14 +21,21 @@ class ViewController extends Controller
 
     public function actionResponseResume($id)
     {
+
         $model = Interview::findOne(['id' => intval($id)]);
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->status = "Intervyu Belgilangan";
+            if ($model->status != null) {
+                $model->status = "Intervyu qayta belgilangan";
+                $repeat = true;
+            } else {
+                $repeat = false;
+                $model->status = "Intervyu Belgilangan";
+            }
             if ($model->save()) {
                 $interview = $this->getInterview($id);
                 $toEmail = $interview->candidate->email;
-                $email = $this->sendMail($toEmail, $model);
+                $email = $this->sendMail($toEmail, $model, $repeat);
                 if ($email->send()) {
                     Yii::$app->getSession()->setFlash('success', 'Interview accepted ' . $toEmail);
                     return $this->redirect(['view-resume']);
@@ -39,12 +46,9 @@ class ViewController extends Controller
             }
         }
 
-        $interview = $this->getInterview($id);
-        $toEmail = $interview->candidate->email;
-
         return $this->render('response-resume', [
             'model' => $model,
-            'interview' => $interview,
+            'candidate' => $this->getInterview($id)->candidate,
         ]);
     }
 
@@ -52,7 +56,7 @@ class ViewController extends Controller
     {
         $interview = $this->getInterview($id);
         $toEmail = $interview->candidate->email;
-        $email = $this->sendMail($toEmail, null);
+        $email = $this->sendMail($toEmail, null, false);
 
         if ($email->send()) {
             $interview->status = "Qabul qilinmagan";
@@ -87,8 +91,8 @@ class ViewController extends Controller
         $interviews = Interview::find()
             ->innerJoinWith('vacancy')
             ->innerJoinWith('candidate')
-            ->where(['status'=>'Yangi'])
-            ->orWhere(['status'=>'Qabul qilinmagan'])
+            ->where(['status' => 'Yangi'])
+            ->orWhere(['status' => 'Qabul qilinmagan'])
             ->all();
 
         usort($interviews, function ($a, $b) {
@@ -118,6 +122,7 @@ class ViewController extends Controller
                 }
             }
         });
+
         return $interviews;
 
     }
@@ -143,14 +148,21 @@ class ViewController extends Controller
      * @param $toEmail
      * @return \yii\mail\MessageInterface
      */
-    public function sendMail($toEmail, $model): MessageInterface
+    public function sendMail($toEmail, $model, $repeat): MessageInterface
     {
         $mailer = Yii::$app->mailer;
 
         if ($model == null) {
-            $subject = "Reject from Asaxiy";
-            $html = "<b>Reject. We are currently unable to accept you for this positionReject</b>";
-            $text = "We are currently unable to accept you for this position";
+            $subject = " Reject from Asaxiy ";
+            $html = "<b> Reject. We are currently unable to accept you for this positionReject</b>";
+            $text = " We are currently unable to accept you for this position ";
+        } else if ($repeat) {
+            $message = $model->note_message;
+            $date = $model->interview_date;
+            $time = $model->interview_time;
+            $subject = "Interview date has changed. Text from Asaxiy";
+            $text = "We have changed the date of the interview with you";
+            $html = "<b>We invite you for again an interview. Eslattma Boshliqdan </b>" . $message . ". Intervyu sanasi: " . $date . ". Intervyu vaqti: " . $time;
         } else {
             $message = $model->note_message;
             $date = $model->interview_date;
@@ -161,7 +173,6 @@ class ViewController extends Controller
 
         }
 
-
         $email = $mailer->compose()
             ->setTo($toEmail)
             ->setFrom('doniy@doniyor.website')
@@ -170,8 +181,33 @@ class ViewController extends Controller
             ->setHtmlBody($html);
         return $email;
     }
+
     public function actionInterviews()
     {
-        return $this->render('interviews');
+        $dataProvider = $this->getArrayDataProvider($this->getAllInterviews());
+
+        return $this->render('interviews', [
+            'dataProvider' => $dataProvider
+        ]);
+    }
+
+    public function actionView($id)
+    {
+        $model = $this->getInterview($id)->candidate;
+        return $this->render("view", [
+            'model' => $model
+        ]);
+    }
+
+    public function getAllInterviews()
+    {
+        return Interview::find()
+            ->innerJoinWith('vacancy')
+            ->innerJoinWith('candidate')
+            ->where(['status' => 'Intervyu Belgilangan'])
+            ->orWhere(['status'=>'Intervyu qayta belgilangan'])
+            ->orderBy(['interview_date' => SORT_ASC])
+            ->orderBy(['interview_time' => SORT_ASC])
+            ->all();
     }
 }

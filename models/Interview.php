@@ -20,7 +20,7 @@ class Interview extends ActiveRecord
             }],
             [['interview_time'], 'filter', 'filter' => function ($value) {
                 $parsedTime = date_create_from_format('H:i', $value);
-                return $parsedTime ? $parsedTime->format('H:i') : null;
+                return $parsedTime ? $parsedTime->format('H:i:00') : null;
             }],
             [['note_message'],'string','min'=>5]
 

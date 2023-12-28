@@ -8,7 +8,9 @@ $form= ActiveForm::begin([
         'class'=>'form-horizontal'
     ]
 ]);
-
+?>
+<h3><?=$candidate->first_name?><span> <?=$candidate->last_name?> bilan intervyu sanasini belgilang: </h3>
+<?php
 echo $form->field($model, 'interview_date')->textInput(['value' => Yii::$app->request->get('interview_date') ?? $model->interview_date]);
 echo $form->field($model, 'interview_time')->textInput(['value' => Yii::$app->request->get('interview_time') ?? $model->interview_time]);
 echo $form->field($model, 'note_message')->textInput(['value' => Yii::$app->request->get('note_message') ?? $model->note_message]);
