@@ -21,9 +21,14 @@ class Candidate extends ActiveRecord
             [['first_name', 'last_name'], 'string', 'min' => 5],
             [['address'], 'string', 'min' => 10],
             ['email', 'email'],
-            ['email','unique','message'=>'This email already exists'],
+            ['email', 'unique', 'message' => 'This email already exists'],
             [['phone_number'], 'string', 'length' => 13],
-            ['phone_number', 'unique','message'=>'This phone number already exists'],
+            ['phone_number', 'unique', 'message' => 'This phone number already exists'],
         ];
+    }
+
+    public function getInterview()
+    {
+        return $this->hasOne(Interview::class,['user_id'=>'id']);
     }
 }

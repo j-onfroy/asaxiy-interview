@@ -3,15 +3,18 @@
 use yii\bootstrap5\Html;
 use yii\grid\GridView;
 
-echo "Hello from admin";
 echo "<br>";
-echo Html::a('Create job', ['admin/create-job'], ['class' => 'btn btn-primary']);
+echo Html::a('Create job', ['admin/create-job'], ['class' => 'btn btn-success']);
+echo "  ";
+echo Html::a('View Resumes', ['view/view-resume'], ['class' => 'btn btn-primary']);
+echo "  ";
+echo Html::a('Interviews', ['view/interviews'], ['class' => 'btn btn-warning']) . "<br>";
+echo "<br>";
 ?>
-    <div class="top-right">
-        <?=
-        Html::a('View Resumes', ['admin/view-resume'], ['class' => 'btn btn-primary']) . "<br>";
-        ?>
-    </div>
+
+
+
+
 
 <?= GridView::widget([
 
@@ -41,3 +44,5 @@ echo Html::a('Create job', ['admin/create-job'], ['class' => 'btn btn-primary'])
     ],
 
 ]);
+?>
+<?= Html::a('Back', ['site/index'], ['class' => 'btn btn-warning'])?>

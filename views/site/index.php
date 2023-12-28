@@ -13,7 +13,7 @@ $form = ActiveForm::begin([
 ]);
 
 echo Html::a('Login with admin', ['admin/index'], ['class' => 'btn btn-primary']) . "<br>";
-
+echo "<br>";
 ActiveForm::end(); ?>
 
 <div class="album">
@@ -22,7 +22,7 @@ ActiveForm::end(); ?>
             <h3><?= $item['job_title'] ?></h3>
             <p><?= $item['job_about'] ?></p>
             <p><?= $item['skills'] ?></p>
-            <?= Html::a('Apply this Job', ['site/apply-job','id'=>$item['id']], ['class' => 'btn btn-primary'])?>
+            <?= Html::a('Apply this Job', ['site/apply-job','id'=>$item['id']], ['class' => 'btn btn-success'])?>
         </div>
     <?php endforeach; ?>
 </div>
