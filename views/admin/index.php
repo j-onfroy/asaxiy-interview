@@ -8,7 +8,9 @@ echo Html::a('Create job', ['admin/create-job'], ['class' => 'btn btn-success'])
 echo "  ";
 echo Html::a('View Resumes', ['view/view-resume'], ['class' => 'btn btn-primary']);
 echo "  ";
-echo Html::a('Interviews', ['view/interviews'], ['class' => 'btn btn-warning']) . "<br>";
+echo Html::a('Interviews', ['view/interviews'], ['class' => 'btn btn-warning']);
+echo "  ";
+echo Html::a('Interviews held', ['interview/index'], ['class' => 'btn btn-warning']) . "<br>";
 echo "<br>";
 ?>
 

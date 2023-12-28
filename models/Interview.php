@@ -19,10 +19,15 @@ class Interview extends ActiveRecord
                 return $parsedDate ? $parsedDate->format('Y-m-d') : null;
             }],
             [['interview_time'], 'filter', 'filter' => function ($value) {
-                $parsedTime = date_create_from_format('H:i', $value);
-                return $parsedTime ? $parsedTime->format('H:i:00') : null;
+                $timeParts = explode(':', $value);
+                if (count($timeParts) === 2) {
+                    $value .= ':00';
+                }
+                $parsedTime = date_create_from_format('H:i:s', $value);
+                return $parsedTime ? $parsedTime->format('H:i:s') : null;
             }],
-            [['note_message'],'string','min'=>5]
+            [['note_message'], 'string', 'min' => 5]
+
 
         ];
     }

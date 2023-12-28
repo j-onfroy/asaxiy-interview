@@ -1,14 +1,23 @@
+<?php
+use yii\bootstrap5\Html;
+echo Html::a('View Resumes', ['view/view-resume'], ['class' => 'btn btn-primary']);
+echo "  ";
+echo Html::a('Interviews', ['view/interviews'], ['class' => 'btn btn-warning']);
+echo "  ";
+echo Html::a('Interviews held', ['interview/index'], ['class' => 'btn btn-warning']) . "<br>";
+echo "<br>";
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-
+<h1>Yuborilgan resumelar</h1>
 <?php
 
 use yii\grid\GridView;
-use yii\helpers\Html;
 
 ?>
 <?= GridView::widget([

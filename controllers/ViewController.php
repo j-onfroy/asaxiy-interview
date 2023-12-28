@@ -3,6 +3,8 @@
 namespace app\controllers;
 
 use app\models\Interview;
+use DateTime;
+use DateTimeZone;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\mail\MessageInterface;
@@ -13,7 +15,6 @@ class ViewController extends Controller
     public function actionViewResume()
     {
         $dataProvider = $this->getArrayDataProvider($this->getAll());
-
         return $this->render('view-resume', [
             'dataProvider' => $dataProvider,
         ]);
@@ -25,12 +26,12 @@ class ViewController extends Controller
         $model = Interview::findOne(['id' => intval($id)]);
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->status != null) {
+            if ($model->status == "Intervyu Belgilangan") {
                 $model->status = "Intervyu qayta belgilangan";
                 $repeat = true;
             } else {
-                $repeat = false;
                 $model->status = "Intervyu Belgilangan";
+                $repeat = false;
             }
             if ($model->save()) {
                 $interview = $this->getInterview($id);
@@ -91,8 +92,10 @@ class ViewController extends Controller
         $interviews = Interview::find()
             ->innerJoinWith('vacancy')
             ->innerJoinWith('candidate')
-            ->where(['status' => 'Yangi'])
-            ->orWhere(['status' => 'Qabul qilinmagan'])
+            ->where(['or',
+                ['status' => 'Yangi'],
+                ['status' => 'Qabul qilinmagan'],
+            ])
             ->all();
 
         usort($interviews, function ($a, $b) {
@@ -199,15 +202,40 @@ class ViewController extends Controller
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function getAllInterviews()
     {
+        $localTimeZone = new DateTimeZone('Asia/Tashkent');
+        $currentTime = new DateTime('now', $localTimeZone);
+        $currentTime = $currentTime->format('H:i:s');
+        $currentDate = date('Y-m-d');
+
         return Interview::find()
             ->innerJoinWith('vacancy')
             ->innerJoinWith('candidate')
-            ->where(['status' => 'Intervyu Belgilangan'])
-            ->orWhere(['status'=>'Intervyu qayta belgilangan'])
-            ->orderBy(['interview_date' => SORT_ASC])
-            ->orderBy(['interview_time' => SORT_ASC])
+            ->where([
+                'or',
+                [
+                    'and',
+                    ['>', 'interview_date', $currentDate],
+                    [
+                        'or',
+                        ['status' => 'Intervyu Belgilangan'],
+                        ['status' => 'Intervyu qayta belgilangan']
+                    ]
+                ],
+                [
+                    'and',
+                    ['interview_date' => $currentDate],
+                    ['>', 'interview_time', $currentTime]
+                ]
+            ])
+            ->orderBy([
+                'interview_date' => SORT_ASC,
+                'interview_time' => SORT_ASC
+            ])
             ->all();
     }
 }

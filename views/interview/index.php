@@ -1,4 +1,3 @@
-
 <?php
 use yii\helpers\Html;
 echo Html::a('View Resumes', ['view/view-resume'], ['class' => 'btn btn-primary']);
@@ -9,13 +8,14 @@ echo Html::a('Interviews held', ['interview/index'], ['class' => 'btn btn-warnin
 echo "<br>";
 ?>
 
+
 <!DOCTYPE html>
 <html>
 <head>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<h1>Yaqinlashib kelayotgan intervyular</h1>
+<h1>Bo'lib o'tgan intervyular</h1>
 <?php
 
 use yii\grid\GridView;
@@ -70,10 +70,13 @@ use yii\grid\GridView;
         'note_message',
         'status',
         ['class' => 'yii\grid\ActionColumn',
-            'template' => ' {view} {update}',
+            'template' => ' {view} {offer} {reject}',
             'buttons' => [
-                'update' => function ($url, $model, $key) {
-                    return Html::a('<i class="fas fa-edit"></i>', ['view/response-resume', 'id' => $model->id], ['class' => 'btn btn-success']);
+                'offer' => function ($url, $model, $key) {
+                    return Html::a('Offer', ['interview/offer', 'id' => $model->id], ['class' => 'btn btn-success']);
+                },
+                'reject' => function ($url, $model, $key) {
+                    return Html::a('Reject', ['interview/reject', 'id' => $model->id], ['class' => 'btn btn-warning']);
                 },
                 'view' => function ($url, $model, $key) {
                     return Html::a('<i class="fas fa-eye"></i>', ['view/view', 'id' => $model->id], ['class' => 'btn btn-primary']);
